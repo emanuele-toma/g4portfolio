@@ -1,0 +1,54 @@
+# Portfolio Configuration
+page:
+  title: Portfolio
+  contacts:
+    title: Get in Touch
+    name:
+      label: Name
+      placeholder: Enter your name
+    email:
+      label: Email
+      placeholder: Enter your email
+    message:
+      label: Message
+      placeholder: Enter your message
+    button: Send Message
+  toast: 🎉 Thank you for your message! I will get back to you as soon as possible.
+
+# Contact Information
+contact:
+  email: contact@example.com
+  phone: +1 (555) 123-4567
+  location: New York, NY
+
+# Portfolio Projects
+projects:
+  - title: Modern Interior Design
+    description: A minimalist approach to contemporary living spaces, focusing on natural light and organic materials.
+    image: https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80
+    category: Interior
+
+  - title: Urban Photography
+    description: Capturing the essence of city life through architectural photography.
+    image: https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80
+    category: Photography
+
+  - title: Nature Inspired
+    description: Bringing the outside in with biophilic design elements.
+    image: https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80
+    category: Landscape
+
+  - title: Corporate Identity
+    description: Brand development for a tech startup, including logo and visual identity.
+    image: https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=800&q=80
+    category: Branding
+
+  - title: Sustainable Design
+    description: Eco-friendly architectural solutions for modern living.
+    image: https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2626
+    category: Architecture
+
+  - title: Urban Spaces
+    description: Reimagining public spaces for community engagement.
+    image: https://images.unsplash.com/photo-1451976426598-a7593bd6d0b2?w=800&q=80
+    category: Urban Design

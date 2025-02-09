@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Poppins', sans-serif;
+    font-display: swap;
+  }
+
+  input,
+  textarea {
+    @apply block w-full px-3 py-2 border-2 border-gray-200 rounded-lg bg-gray-50 text-gray-900 transition-colors duration-200 ease-in-out text-sm;
+  }
+
+  input:focus,
+  textarea:focus {
+    @apply outline-none border-indigo-500 bg-white ring-2 ring-indigo-200 ring-opacity-50;
+  }
+
+  input:hover,
+  textarea:hover {
+    @apply border-indigo-300 bg-gray-50;
+  }
+}
+
+.modal-open {
+  overflow: hidden;
+}
