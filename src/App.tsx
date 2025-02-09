@@ -76,6 +76,8 @@ function App() {
     setFormData({ name: '', email: '', message: '' });
   };
 
+  document.title = config.page.title;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
