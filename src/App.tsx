@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import _config from './config.yml';
 import { ToastContainer, toast } from 'react-toastify';
@@ -30,7 +30,11 @@ interface Config {
       };
       button: string;
     };
-    toast: string;
+    toast: {
+      loading: string;
+      success: string;
+      error: string;
+    };
   };
   contact: {
     email: string;
@@ -42,20 +46,61 @@ interface Config {
 
 const config: Config = _config as Config;
 
-const projects: Project[] = config.projects;
+const projects: Project[] = config.projects.map(p => ({
+  ...p,
+  id: Math.random(),
+}));
 
 function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [opened, setOpened] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    toast(config.page.toast, {
+    const loading = toast(config.page.toast.loading, {
+      position: 'top-center',
+      autoClose: false,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      closeButton: false,
+      style: {
+        color: 'black',
+        fontSize: '12px',
+        fontWeight: 500,
+      },
+    });
+
+    // send to formsubmit.co
+    await fetch(`https://formsubmit.co/ajax/${config.contact.email}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+      }),
+    })
+      .catch(() => {
+        toast.error(config.page.toast.error);
+        throw new Error('Failed to send message');
+      })
+      .finally(() => {
+        toast.dismiss(loading);
+        setFormData({ name: '', email: '', message: '' });
+      });
+
+    toast(config.page.toast.success, {
       position: 'top-center',
       autoClose: 5000,
       hideProgressBar: true,
@@ -70,11 +115,15 @@ function App() {
         fontWeight: 500,
       },
     });
-
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    setFormData({ name: '', email: '', message: '' });
   };
+
+  useEffect(() => {
+    if (opened) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [opened]);
 
   document.title = config.page.title;
 
@@ -82,38 +131,39 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 py-6">
           <h1 className="text-3xl font-bold text-gray-900">{config.page.title}</h1>
         </div>
       </header>
-
       {/* Gallery */}
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="max-w-7xl mx-auto px-3 py-12">
+        <div className="grid grid-cols-3 gap-1">
           {projects.map(project => (
             <div
               key={project.id}
-              className="relative group cursor-pointer overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
-              onClick={() => setSelectedProject(project)}
+              className="relative group cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+              onClick={() => {
+                setSelectedProject(project);
+                setOpened(true);
+              }}
             >
               <img
                 src={project.image}
                 alt={project.title}
-                className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300"
+                className="aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300">
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                  <h3 className="text-xl font-semibold">{project.title}</h3>
-                  <p className="text-sm">{project.category}</p>
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <h3 className="text-xs sm:text-sm lg:text-xl font-semibold">{project.title}</h3>
+                  <p className="text-xs lg:text-sm">{project.category}</p>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-
       {/* Contact Form */}
-      <div className="max-w-xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+      <div className="max-w-xl mx-auto px-3 py-12">
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-6">{config.page.contacts.title}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -163,7 +213,7 @@ function App() {
             </div>
             <button
               type="submit"
-              className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-indigo-700 transform hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-indigo-700 hover:translate-y-[-1px] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               {config.page.contacts.button}
             </button>
@@ -185,29 +235,44 @@ function App() {
           </div>
         </div>
       </div>
-
       {/* Modal */}
-      {selectedProject && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50"
-          onClick={() => {
-            setSelectedProject(null);
-          }}
-        >
-          <div className="relative bg-white rounded-lg max-w-4xl w-full" onClick={e => e.stopPropagation()}>
-            <div className="p-6">
-              <img
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                className="w-full h-[60vh] object-cover rounded-lg"
-              />
-              <h3 className="text-2xl font-bold mt-4">{selectedProject.title}</h3>
-              <p className="text-gray-600 mt-2">{selectedProject.description}</p>
-              <p className="text-sm text-indigo-600 mt-2">{selectedProject.category}</p>
+      <div
+        className={`fixed inset-0 flex items-center justify-center z-50 transition-transform md:transition-opacity duration-100 ease-in-out md:bg-black md:bg-opacity-75
+            ${opened ? '' : 'translate-x-full md:opacity-0'}
+            `}
+        onClick={() => {
+          setOpened(false);
+        }}
+      >
+        <div className="relative bg-white max-w-4xl w-full h-full md:h-auto" onClick={e => e.stopPropagation()}>
+          <div>
+            <div className="p-4 flex flex-row items-end gap-2">
+              <button
+                className="md:hidden text-gray-600 mb-[1px]"
+                onClick={() => {
+                  setOpened(false);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="black"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </button>
+              <h3 className="text-xl font-bold">{selectedProject?.title}</h3>
+            </div>
+            <img src={selectedProject?.image} alt={selectedProject?.title} className="w-full h-[60vh] object-cover" />
+            <div className="p-4">
+              <p className="text-gray-600 mt-2">{selectedProject?.description}</p>
+              <p className="text-sm text-indigo-600 mt-2">{selectedProject?.category}</p>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       <ToastContainer />
     </div>
