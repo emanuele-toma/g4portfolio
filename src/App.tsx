@@ -244,7 +244,7 @@ function App() {
           setOpened(false);
         }}
       >
-        <div className="relative bg-white max-w-4xl w-full h-full md:h-auto" onClick={e => e.stopPropagation()}>
+        <div className="relative bg-white max-w-4xl w-full h-dvh md:h-auto" onClick={e => e.stopPropagation()}>
           <div>
             <div className="p-4 flex flex-row items-end gap-2">
               <button
